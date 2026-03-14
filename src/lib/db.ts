@@ -74,9 +74,12 @@ db.exec(`
     telefono TEXT,
     email TEXT,
     cuil TEXT,
-    documento TEXT DEFAULT 'DNI'
+    documento TEXT DEFAULT 'DNI',
+    logo TEXT
   );
 `);
+
+db.exec(`ALTER TABLE empresa ADD COLUMN logo TEXT;`);
 
 export interface Cliente {
   id: string;
@@ -345,15 +348,15 @@ export function createComprobante(data: Omit<Comprobante, 'id' | 'created_at' | 
   return getComprobanteById(id)!;
 }
 
-export function getEmpresa(): { nombre: string; direccion: string; telefono: string; email: string; cuil: string; documento: string } | undefined {
-  return db.prepare('SELECT * FROM empresa WHERE id = 1').get() as { nombre: string; direccion: string; telefono: string; email: string; cuil: string; documento: string } | undefined;
+export function getEmpresa(): { nombre: string; direccion: string; telefono: string; email: string; cuil: string; documento: string; logo: string } | undefined {
+  return db.prepare('SELECT * FROM empresa WHERE id = 1').get() as { nombre: string; direccion: string; telefono: string; email: string; cuil: string; documento: string; logo: string } | undefined;
 }
 
-export function setEmpresa(data: { nombre: string; direccion: string; telefono: string; email: string; cuil: string; documento: string }): void {
+export function setEmpresa(data: { nombre: string; direccion: string; telefono: string; email: string; cuil: string; documento: string; logo: string }): void {
   db.prepare(`
-    INSERT OR REPLACE INTO empresa (id, nombre, direccion, telefono, email, cuil, documento)
-    VALUES (1, ?, ?, ?, ?, ?, ?)
-  `).run(data.nombre, data.direccion, data.telefono, data.email, data.cuil, data.documento);
+    INSERT OR REPLACE INTO empresa (id, nombre, direccion, telefono, email, cuil, documento, logo)
+    VALUES (1, ?, ?, ?, ?, ?, ?, ?)
+  `).run(data.nombre, data.direccion, data.telefono, data.email, data.cuil, data.documento, data.logo || null);
 }
 
 export function getEstadisticas() {
