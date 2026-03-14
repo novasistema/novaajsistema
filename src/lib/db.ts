@@ -77,6 +77,13 @@ db.exec(`
     documento TEXT DEFAULT 'DNI',
     logo TEXT
   );
+
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 db.exec(`ALTER TABLE empresa ADD COLUMN logo TEXT;`);
@@ -369,6 +376,34 @@ export function getEstadisticas() {
   `).get() as { total: number }).total;
   
   return { totalClientes, totalAplicaciones, suscripcionesActivas, ingresosMes };
+}
+
+const DEFAULT_ADMIN_USER = 'admin';
+const DEFAULT_ADMIN_PASS = 'admin123';
+
+const userExists = db.prepare('SELECT COUNT(*) as count FROM users WHERE username = ?').get(DEFAULT_ADMIN_USER) as { count: number };
+if (userExists.count === 0) {
+  db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASS);
+}
+
+export function verifyUser(username: string, password: string): boolean {
+  const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username) as { username: string; password: string } | undefined;
+  if (!user) return false;
+  return user.password === password;
+}
+
+export function updateUserPassword(username: string, newPassword: string): boolean {
+  const result = db.prepare('UPDATE users SET password = ? WHERE username = ?').run(newPassword, username);
+  return result.changes > 0;
+}
+
+export function createUser(username: string, password: string): boolean {
+  try {
+    db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(username, password);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export default db;

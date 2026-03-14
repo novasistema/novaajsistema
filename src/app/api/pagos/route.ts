@@ -12,7 +12,8 @@ import {
   setEmpresa,
   getEmpresa,
   getEstadisticas,
-  updateSuscripcion
+  updateSuscripcion,
+  updateUserPassword
 } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
@@ -147,6 +148,22 @@ export async function POST(request: NextRequest) {
       });
       
       return NextResponse.json(comprobante, { status: 201 });
+    }
+
+    if (action === 'change_password') {
+      const data = await request.json();
+      
+      if (!data.username || !data.newPassword) {
+        return NextResponse.json({ error: 'Usuario y nueva contraseña requeridos' }, { status: 400 });
+      }
+      
+      const success = updateUserPassword(data.username, data.newPassword);
+      
+      if (!success) {
+        return NextResponse.json({ error: 'Error al cambiar contraseña' }, { status: 500 });
+      }
+      
+      return NextResponse.json({ success: true });
     }
     
     return NextResponse.json({ error: 'Acción no válida' }, { status: 400 });
