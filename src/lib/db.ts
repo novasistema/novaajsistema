@@ -88,7 +88,15 @@ db.exec(`
   );
 `);
 
-db.exec(`ALTER TABLE empresa ADD COLUMN logo TEXT;`);
+try {
+  db.exec(`ALTER TABLE empresa ADD COLUMN logo TEXT;`);
+} catch (e) {}
+try {
+  db.exec(`ALTER TABLE empresa ADD COLUMN mercadopago_access_token TEXT;`);
+} catch (e) {}
+try {
+  db.exec(`ALTER TABLE empresa ADD COLUMN mercadopago_webhook_secret TEXT;`);
+} catch (e) {}
 
 export interface Cliente {
   id: string;
