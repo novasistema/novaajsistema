@@ -10,6 +10,8 @@ interface Empresa {
   cuil: string;
   documento: string;
   logo: string;
+  mercadopago_access_token?: string;
+  mercadopago_webhook_secret?: string;
 }
 
 export default function ConfiguracionPage() {
@@ -21,6 +23,8 @@ export default function ConfiguracionPage() {
     cuil: '',
     documento: 'DNI',
     logo: '',
+    mercadopago_access_token: '',
+    mercadopago_webhook_secret: '',
   });
   const [saved, setSaved] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string>('');
@@ -309,6 +313,45 @@ export default function ConfiguracionPage() {
               >
                 Cambiar Contraseña
               </button>
+            </div>
+          </form>
+        </div>
+
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-lg font-medium mb-4">Mercado Pago</h2>
+          
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-blue-800">
+              <strong>Importante:</strong> Para habilitar ventas automáticas, necesitás:
+              <br />1. Crear una cuenta en <a href="https://www.mercadopago.com.ar" target="_blank" rel="noopener noreferrer" className="underline">Mercado Pago</a>
+              <br />2. Obtener tu Access Token en Configuración → Credenciales de API
+              <br />3. Pegar el token en el campo de abajo
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Access Token de Mercado Pago</label>
+                <input
+                  type="text"
+                  value={empresa.mercadopago_access_token || ''}
+                  onChange={(e) => setEmpresa({ ...empresa, mercadopago_access_token: e.target.value })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  placeholder="APP_USR-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                />
+                <p className="text-xs text-gray-500 mt-1">Encontralo en: Mercado Pago → Configuración → Credenciales de API</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Webhook Secret (opcional)</label>
+                <input
+                  type="text"
+                  value={empresa.mercadopago_webhook_secret || ''}
+                  onChange={(e) => setEmpresa({ ...empresa, mercadopago_webhook_secret: e.target.value })}
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  placeholder="Token de verificación de webhook"
+                />
+              </div>
             </div>
           </form>
         </div>

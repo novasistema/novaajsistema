@@ -94,12 +94,12 @@ export default function HomePage() {
               Por eso creamos soluciones tecnológicas que se adaptan a tus necesidades específicas.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="#soluciones"
+              <Link
+                href="/catalogo"
                 className="bg-white text-slate-900 px-8 py-3 rounded-lg font-semibold hover:bg-slate-100 transition-colors"
               >
-                Ver Soluciones
-              </a>
+                Ver Aplicaciones
+              </Link>
               <Link
                 href="/dashboard"
                 className="border-2 border-slate-600 text-white px-8 py-3 rounded-lg font-semibold hover:border-white transition-colors"

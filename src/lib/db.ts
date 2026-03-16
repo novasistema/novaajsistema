@@ -75,7 +75,9 @@ db.exec(`
     email TEXT,
     cuil TEXT,
     documento TEXT DEFAULT 'DNI',
-    logo TEXT
+    logo TEXT,
+    mercadopago_access_token TEXT,
+    mercadopago_webhook_secret TEXT
   );
 
   CREATE TABLE IF NOT EXISTS users (
@@ -355,15 +357,39 @@ export function createComprobante(data: Omit<Comprobante, 'id' | 'created_at' | 
   return getComprobanteById(id)!;
 }
 
-export function getEmpresa(): { nombre: string; direccion: string; telefono: string; email: string; cuil: string; documento: string; logo: string } | undefined {
-  return db.prepare('SELECT * FROM empresa WHERE id = 1').get() as { nombre: string; direccion: string; telefono: string; email: string; cuil: string; documento: string; logo: string } | undefined;
+export interface Empresa {
+  nombre: string;
+  direccion: string;
+  telefono: string;
+  email: string;
+  cuil: string;
+  documento: string;
+  logo: string;
+  mercadopago_access_token?: string;
+  mercadopago_webhook_secret?: string;
 }
 
-export function setEmpresa(data: { nombre: string; direccion: string; telefono: string; email: string; cuil: string; documento: string; logo: string }): void {
+export function getEmpresa(): Empresa | undefined {
+  return db.prepare('SELECT * FROM empresa WHERE id = 1').get() as Empresa | undefined;
+}
+
+export function setEmpresa(data: Partial<Empresa>): void {
+  const current = getEmpresa();
+  const empresa: Empresa = {
+    nombre: data.nombre || current?.nombre || '',
+    direccion: data.direccion ?? current?.direccion ?? '',
+    telefono: data.telefono ?? current?.telefono ?? '',
+    email: data.email ?? current?.email ?? '',
+    cuil: data.cuil ?? current?.cuil ?? '',
+    documento: data.documento || current?.documento || 'DNI',
+    logo: data.logo ?? current?.logo ?? '',
+    mercadopago_access_token: data.mercadopago_access_token ?? current?.mercadopago_access_token ?? '',
+    mercadopago_webhook_secret: data.mercadopago_webhook_secret ?? current?.mercadopago_webhook_secret ?? '',
+  };
   db.prepare(`
-    INSERT OR REPLACE INTO empresa (id, nombre, direccion, telefono, email, cuil, documento, logo)
-    VALUES (1, ?, ?, ?, ?, ?, ?, ?)
-  `).run(data.nombre, data.direccion, data.telefono, data.email, data.cuil, data.documento, data.logo || null);
+    INSERT OR REPLACE INTO empresa (id, nombre, direccion, telefono, email, cuil, documento, logo, mercadopago_access_token, mercadopago_webhook_secret)
+    VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(empresa.nombre, empresa.direccion, empresa.telefono, empresa.email, empresa.cuil, empresa.documento, empresa.logo || null, empresa.mercadopago_access_token || null, empresa.mercadopago_webhook_secret || null);
 }
 
 export function getEstadisticas() {
