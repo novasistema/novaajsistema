@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Empresa {
   nombre: string;
@@ -9,6 +10,7 @@ interface Empresa {
 }
 
 export default function DashboardNavbar() {
+  const router = useRouter();
   const [empresa, setEmpresa] = useState<Empresa>({ nombre: 'AppManager', logo: '' });
 
   useEffect(() => {
@@ -85,6 +87,15 @@ export default function DashboardNavbar() {
             >
               Configuración
             </Link>
+            <button
+              onClick={() => {
+                localStorage.removeItem('adminAuthenticated');
+                router.push('/login');
+              }}
+              className="ml-3 text-red-500 hover:text-red-700 px-3 py-2 rounded-md text-sm font-medium"
+            >
+              Cerrar Sesión
+            </button>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -9,6 +10,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const isAuthenticated = localStorage.getItem('adminAuthenticated');
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +30,7 @@ export default function LoginPage() {
     });
 
     if (res.ok) {
+      localStorage.setItem('adminAuthenticated', 'true');
       router.push('/dashboard');
     } else {
       const data = await res.json();
